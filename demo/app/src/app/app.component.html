@@ -1,0 +1,42 @@
+<main class="demo">
+  <h1>Angular wrappers demo</h1>
+  <p>
+    <code>&lt;my-button&gt;</code> is wrapped by the generated <code>MyButton</code> component. Its inputs and
+    outputs come from the custom element's manifest.
+  </p>
+
+  <section class="controls">
+    <label>
+      Variant
+      <select (change)="variant = $any($event.target).value">
+        <option value="primary" [selected]="variant === 'primary'">primary</option>
+        <option value="secondary" [selected]="variant === 'secondary'">secondary</option>
+      </select>
+    </label>
+
+    <label>
+      <input type="checkbox" [checked]="isDisabled" (change)="isDisabled = $any($event.target).checked" />
+      Disabled
+    </label>
+  </section>
+
+  <section class="preview">
+    <my-button
+      [variant]="variant"
+      [disabled]="isDisabled"
+      (myClick)="onClick($event)"
+      (change)="onChange($event)"
+    >
+      Save changes
+    </my-button>
+
+    <my-button variant="secondary">Static attributes work too</my-button>
+  </section>
+
+  <dl class="state">
+    <dt>Clicks (from <code>(myClick)</code>)</dt>
+    <dd>{{ clicks }}</dd>
+    <dt>Last value (from <code>(change)</code>)</dt>
+    <dd>{{ lastValue || '—' }}</dd>
+  </dl>
+</main>

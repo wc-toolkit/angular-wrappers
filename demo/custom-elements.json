@@ -1,0 +1,123 @@
+{
+  "schemaVersion": "1.0.0",
+  "readme": "",
+  "modules": [
+    {
+      "kind": "javascript-module",
+      "path": "demo/app/src/elements/my-button.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "A demo button used to exercise the generated Angular wrappers.",
+          "name": "MyButton",
+          "slots": [
+            {
+              "description": "The button label.",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "#clicks",
+              "privacy": "private",
+              "type": {
+                "text": "number"
+              },
+              "default": "0"
+            },
+            {
+              "kind": "field",
+              "name": "#button",
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "variant",
+              "description": "The visual variant.",
+              "type": {
+                "text": "\"primary\" | \"secondary\""
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "description": "Disables the button.",
+              "type": {
+                "text": "boolean"
+              },
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\"",
+              "description": "The most recent status text."
+            }
+          ],
+          "events": [
+            {
+              "type": {
+                "text": "CustomEvent<{count: number}>"
+              },
+              "description": "Fires when the button is clicked.",
+              "name": "my-click"
+            },
+            {
+              "type": {
+                "text": "Event"
+              },
+              "description": "Fires when the value changes.",
+              "name": "change"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "variant",
+              "description": "The visual variant.",
+              "type": {
+                "text": "\"primary\" | \"secondary\""
+              },
+              "fieldName": "variant"
+            },
+            {
+              "name": "disabled",
+              "description": "Disables the button.",
+              "type": {
+                "text": "boolean"
+              },
+              "fieldName": "disabled"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "my-button",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "MyButton",
+          "declaration": {
+            "name": "MyButton",
+            "module": "demo/app/src/elements/my-button.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "my-button",
+          "declaration": {
+            "name": "MyButton",
+            "module": "demo/app/src/elements/my-button.js"
+          }
+        }
+      ]
+    }
+  ]
+}
