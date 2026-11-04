@@ -152,6 +152,8 @@ function createContext(
 ): GenerationContext {
   const config: AngularWrapperOptions = {
     outdir: "./angular",
+    stronglyTypedEvents: true,
+    ssrSafe: false,
     exclude: [],
     attributeMapping: {},
     globalProps: [],
@@ -693,9 +695,30 @@ function getOutputTemplate(output: OutputDescriptor) {
   `;
 }
 
-function getListenerTemplate(outputs: OutputDescriptor[]) {
-  if (!has(outputs)) {
+function getConstructorTemplate(
+  context: GenerationContext,
+  modulePath: string,
+  outputs: OutputDescriptor[],
+) {
+  const needsConstructor = context.config.ssrSafe || has(outputs);
+  if (!needsConstructor) {
     return "";
+  }
+
+  const setupImport = context.config.ssrSafe
+    ? `
+      if (this.isBrowser) {
+        void import("${modulePath}");
+      }
+    `
+    : "";
+
+  if (!has(outputs)) {
+    return `
+      constructor() {
+        ${setupImport}
+      }
+    `;
   }
 
   const listeners = outputs
@@ -707,6 +730,8 @@ function getListenerTemplate(outputs: OutputDescriptor[]) {
 
   return `
     constructor() {
+      ${setupImport}
+      ${context.config.ssrSafe ? "if (!this.isBrowser) { return; }" : ""}
       const element = this.elementRef.nativeElement;
       const listeners: Array<[string, (event: Event) => void]> = [
         ${listeners}
@@ -784,10 +809,20 @@ function getComponentTemplate(
     has(outputs) ? "Output" : "",
     has(outputs) ? "EventEmitter" : "",
     has(outputs) ? "DestroyRef" : "",
+    context.config.ssrSafe ? "PLATFORM_ID" : "",
   ].filter(Boolean);
+  const commonImports = context.config.ssrSafe
+    ? 'import { isPlatformBrowser } from "@angular/common";'
+    : "";
   const elementImport = elementType.useUnknownElementType
     ? `export type ${componentName}Element = HTMLUnknownElement;`
-    : `
+    : context.config.ssrSafe
+      ? `
+    import type {
+      ${elementType.exportKind === "default" ? "default" : component.name} as ${componentName}Element
+    } from "${modulePath}";
+    export type { ${componentName}Element${detailTypes.map((type) => `, ${type}`).join("")} };`
+      : `
     import {
       ${elementType.exportKind === "default" ? "default" : component.name} as ${componentName}Element
     } from "${modulePath}";
@@ -795,7 +830,8 @@ function getComponentTemplate(
 
   return `
     import { ${angularImports.join(", ")} } from "@angular/core";
-    import "${modulePath}";
+    ${commonImports}
+    ${context.config.ssrSafe ? "" : `import "${modulePath}";`}
     ${has(detailTypes) ? `import type { ${detailTypes.join(", ")} } from "${modulePath}";` : ""}
     ${elementImport}
 
@@ -812,9 +848,11 @@ function getComponentTemplate(
     })
     export class ${componentName} {
       private readonly elementRef = inject<ElementRef<${componentName}Element>>(ElementRef);
+      ${context.config.ssrSafe ? "private readonly platformId = inject(PLATFORM_ID);" : ""}
+      ${context.config.ssrSafe ? "private readonly isBrowser = isPlatformBrowser(this.platformId);" : ""}
       ${has(outputs) ? "private readonly destroyRef = inject(DestroyRef);" : ""}
       ${outputs.map(getOutputTemplate).join("")}
-      ${getListenerTemplate(outputs)}
+      ${getConstructorTemplate(context, modulePath, outputs)}
       ${inputs.map(getInputTemplate).join("")}
     }
   `;

@@ -14,58 +14,55 @@ Requires Angular 16.1 or later.
 
 ## Quick Start
 
-Use the option that matches the tool you already run.
+This package provides plugins and tools to quicky get wrappers generated.
 
 ### 1) CEM Generator Plugin
 
-Add `angularWrappersGeneratorPlugin(...)` to your standard `cem-generator.config.*` file. When generation runs, wrapper files are written to `outdir`.
-- **Tools:** [`@wc-toolkit/cem-generator`](https://www.npmjs.com/package/@wc-toolkit/cem-generator), [`angularWrappersGeneratorPlugin`](https://www.npmjs.com/package/@wc-toolkit/angular-wrappers)
+If you are using the [CEM Generator](https://cem-generator.wc-toolkit.com/), this library provides a plugin to get quickly set up and keep in sync with your CEM.
+
+1. Add `angularWrappersGeneratorPlugin(...)` to `cem-generator.config.*`.
+2. Run `cem generate`.
+3. Use files emitted to `outdir`.
 
 ```js
 // cem-generator.config.mjs
 import { angularWrappersGeneratorPlugin } from "@wc-toolkit/angular-wrappers";
 
 export default {
-  plugins: [angularWrappersGeneratorPlugin({ outdir: "./angular" })],
+  plugins: [angularWrappersGeneratorPlugin()],
 };
 ```
 
-Then run `npx cem generate`.
-
 ### 2) CEM Analyzer Plugin
 
-Add `angularWrappersAnalyzerPlugin(...)` to `custom-elements-manifest.config.*` under `plugins`. Then run `cem analyze` to generate wrappers into `outdir`.
-- **Tools:** [CEM Analyzer](https://custom-elements-manifest.open-wc.org/analyzer/getting-started/), [`angularWrappersAnalyzerPlugin`](https://www.npmjs.com/package/@wc-toolkit/angular-wrappers)
+If you already run the [CEM Analyzer](https://custom-elements-manifest.open-wc.org/analyzer/getting-started/) directly, use this.
+
+1. Add `angularWrappersAnalyzerPlugin(...)` to `custom-elements-manifest.config.*`.
+2. Run `cem analyze`.
+3. Use files emitted to `outdir`.
 
 ```js
 // custom-elements-manifest.config.mjs
 import { angularWrappersAnalyzerPlugin } from "@wc-toolkit/angular-wrappers";
 
 export default {
-  plugins: [
-    angularWrappersAnalyzerPlugin({
-      outdir: "./angular",
-    }),
-  ],
+  plugins: [angularWrappersAnalyzerPlugin()],
 };
 ```
 
-Then run `npx cem analyze`.
-
 ### 3) Programmatic Usage
 
-Import `generateAngularWrappers(...)`, pass a manifest object, and provide options directly in code. The function returns metadata about generated and removed files.
+Use this when wrappers are part of a custom build script.
+
+1. Load your manifest object.
+2. Call `generateAngularWrappers(...)`.
+3. Consume generated files from `outdir`.
 
 ```ts
 import manifest from "./custom-elements.json" with { type: "json" };
 import { generateAngularWrappers } from "@wc-toolkit/angular-wrappers";
 
-const result = generateAngularWrappers(manifest, {
-  outdir: "./angular",
-  stronglyTypedEvents: true,
-});
-
-console.log(result.generatedFiles);
+generateAngularWrappers(manifest, {...});
 ```
 
 ## Using Generated Wrappers
@@ -124,22 +121,23 @@ The generated files are TypeScript source. Compile them with your library build 
 
 ## Configuration Options
 
-| Option                   | Type                                             | Default         | Description                                                                     |
-| ------------------------ | ------------------------------------------------ | --------------- | ------------------------------------------------------------------------------- |
-| `outdir`                 | `string`                                         | `"./angular"`   | Output directory for generated files                                            |
+| Option                   | Type                                             | Default                      | Description                                                                     |
+| ------------------------ | ------------------------------------------------ | ---------------------------- | ------------------------------------------------------------------------------- |
+| `outdir`                 | `string`                                         | `"./angular"`                | Output directory for generated files                                            |
 | `packageJsonPath`        | `string`                                         | `process.cwd()/package.json` | Path used to resolve fallback module imports when CEM module paths are remapped |
-| `modulePath`             | `(className, tagName, cemModulePath?) => string` | CEM module path | Transform or replace the import path of the element module                      |
-| `defaultExport`          | `boolean`                                        | `false`         | Import the element class as a default export                                    |
-| `stronglyTypedEvents`    | `boolean`                                        | `false`         | Generate `<Component><Event>ElementEvent` aliases whose `target` is the element |
-| `attributeMapping`       | `Record<string, string>`                         | `{}`            | Rename attributes to input names. Required for reserved names such as `class`   |
-| `globalProps`            | `MappedAttribute[]`                              | `[]`            | Inputs added to every wrapper                                                   |
-| `globalEvents`           | `GlobalEvent[]`                                  | `[]`            | Outputs added to every wrapper                                                  |
-| `componentNameFormatter` | `(tagName, componentName) => string`             | `undefined`     | Customize the generated class and file names                                    |
-| `exclude`                | `string[]`                                       | `[]`            | Component class names to skip                                                   |
-| `descriptionSrc`         | `"description" \| "summary"`                     | `"description"` | Manifest field used for component documentation                                 |
-| `debug`                  | `boolean`                                        | `false`         | Enable detailed logging                                                         |
-| `failOnWarnings`         | `boolean`                                        | `false`         | Treat generation warnings as errors (recommended in CI)                         |
-| `skip`                   | `boolean`                                        | `false`         | Skip generation (useful for conditional execution)                              |
+| `modulePath`             | `(className, tagName, cemModulePath?) => string` | CEM module path              | Transform or replace the import path of the element module                      |
+| `defaultExport`          | `boolean`                                        | `false`                      | Import the element class as a default export                                    |
+| `stronglyTypedEvents`    | `boolean`                                        | `true`                       | Generate `<Component><Event>ElementEvent` aliases whose `target` is the element |
+| `ssrSafe`                | `boolean`                                        | `false`                      | Browser-gate event wiring and load custom elements with dynamic import          |
+| `attributeMapping`       | `Record<string, string>`                         | `{}`                         | Rename attributes to input names. Required for reserved names such as `class`   |
+| `globalProps`            | `MappedAttribute[]`                              | `[]`                         | Inputs added to every wrapper                                                   |
+| `globalEvents`           | `GlobalEvent[]`                                  | `[]`                         | Outputs added to every wrapper                                                  |
+| `componentNameFormatter` | `(tagName, componentName) => string`             | `undefined`                  | Customize the generated class and file names                                    |
+| `exclude`                | `string[]`                                       | `[]`                         | Component class names to skip                                                   |
+| `descriptionSrc`         | `"description" \| "summary"`                     | `"description"`              | Manifest field used for component documentation                                 |
+| `debug`                  | `boolean`                                        | `false`                      | Enable detailed logging                                                         |
+| `failOnWarnings`         | `boolean`                                        | `false`                      | Treat generation warnings as errors (recommended in CI)                         |
+| `skip`                   | `boolean`                                        | `false`                      | Skip generation (useful for conditional execution)                              |
 
 ### Why `packageJsonPath` matters
 
@@ -157,6 +155,15 @@ For element class typing, the generator checks what the module actually exports:
 - If no importable class export is available, it falls back to `HTMLUnknownElement` typing instead of failing generation.
 
 This fallback is especially useful for CSS-only or atypical manifests that define a tag but do not export a class symbol the wrapper can import.
+
+### SSR Safety
+
+Set `ssrSafe: true` to generate wrappers that are friendlier to Angular SSR:
+
+- custom element modules are loaded in the browser (`import(...)`) instead of top-level side-effect imports
+- event listeners are only attached in the browser
+
+This keeps server rendering from eagerly running client-only custom element code.
 
 ### Reserved Attribute Names
 
@@ -190,11 +197,6 @@ generateAngularWrappers(manifest, {
   ],
 });
 ```
-
-## Differences From React Wrappers
-
-- No `reactProps`, `scopedTags`, or `ssrSafe` options yet. Angular equivalents are planned.
-- Wrappers declare only the members from the manifest. Native HTML attributes such as `id` and `tabindex` work without declaration.
 
 ## Limitations
 

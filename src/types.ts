@@ -15,6 +15,8 @@ export interface AngularWrapperOptions {
   defaultExport?: boolean;
   /** Creates event types where the event's target is typed as the custom element */
   stronglyTypedEvents?: boolean;
+  /** Generates wrappers that only load/register custom elements in the browser, improving Angular SSR compatibility. */
+  ssrSafe?: boolean;
   /** Used to provide alternative input names to prevent name collisions with Angular or HTML attributes */
   attributeMapping?: { [key: string]: string };
   /** Used to add custom global inputs to all component wrappers */

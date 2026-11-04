@@ -161,6 +161,33 @@ describe("generateAngularWrappers", () => {
     );
   });
 
+  it("generates browser-only module loading when ssrSafe is enabled", () => {
+    const { component } = generate({ ssrSafe: true });
+
+    expect(squash(component())).toContain(
+      squash('import { isPlatformBrowser } from "@angular/common";'),
+    );
+    expect(squash(component())).toContain(
+      squash("private readonly platformId = inject(PLATFORM_ID);"),
+    );
+    expect(squash(component())).toContain(
+      squash(
+        "private readonly isBrowser = isPlatformBrowser(this.platformId);",
+      ),
+    );
+    expect(squash(component())).toContain(
+      squash(
+        'if (this.isBrowser) { void import("./my-components/autoloader"); }',
+      ),
+    );
+    expect(squash(component())).toContain(
+      squash("if (!this.isBrowser) { return; }"),
+    );
+    expect(squash(component())).not.toContain(
+      squash('import "./my-components/autoloader";'),
+    );
+  });
+
   it("falls back to named export when defaultExport is enabled but unavailable", () => {
     const { component } = generate({ defaultExport: true });
 
@@ -313,7 +340,7 @@ describe("generateAngularWrappers", () => {
   });
 
   it("generates outputs with typed custom event details and listener cleanup", () => {
-    const { component } = generate();
+    const { component } = generate({ stronglyTypedEvents: false });
 
     expect(squash(component())).toContain(
       squash(
@@ -370,8 +397,14 @@ describe("generateAngularWrappers", () => {
     );
   });
 
-  it("does not generate event aliases by default", () => {
+  it("generates event aliases by default", () => {
     const { component } = generate();
+
+    expect(squash(component())).toContain(squash("MyButtonElementEvent"));
+  });
+
+  it("does not generate event aliases when stronglyTypedEvents is disabled", () => {
+    const { component } = generate({ stronglyTypedEvents: false });
 
     expect(squash(component())).not.toContain(squash("ElementEvent"));
   });
@@ -393,6 +426,31 @@ describe("generateAngularWrappers", () => {
     );
 
     expect(squash(component())).not.toContain(squash("constructor()"));
+    expect(squash(component())).not.toContain(squash("DestroyRef"));
+  });
+
+  it("still emits a constructor for browser module loading when ssrSafe has no events", () => {
+    const { component } = generate(
+      { ssrSafe: true },
+      createManifest([
+        {
+          kind: "class",
+          name: "MyButton",
+          tagName: "my-button",
+          customElement: true,
+          attributes: [
+            { name: "variant", fieldName: "variant", type: { text: "string" } },
+          ],
+        },
+      ]),
+    );
+
+    expect(squash(component())).toContain(squash("constructor()"));
+    expect(squash(component())).toContain(
+      squash(
+        'if (this.isBrowser) { void import("./my-components/autoloader"); }',
+      ),
+    );
     expect(squash(component())).not.toContain(squash("DestroyRef"));
   });
 
