@@ -21,7 +21,8 @@
   "files": [
     "index.js",
     "index.d.ts",
-    "/dist"
+    "/dist",
+    "images"
   ],
   "scripts": {
     "changeset": "changeset add",
@@ -47,7 +48,7 @@
   "bugs": {
     "url": "https://github.com/wc-toolkit/angular-wrappers/issues"
   },
-  "homepage": "https://wc-toolkit.com/documentation/angular-wrappers",
+  "homepage": "https://wc-toolkit.com/integrations/angular/",
   "devDependencies": {
     "@angular/core": "^19.2.0",
     "@changesets/cli": "^2.27.12",
