@@ -1,6 +1,6 @@
 # WC Toolkit Angular Wrappers
 
-![WC Toolkit Angular Wrappers](./images/wc-toolkit_angular.png)
+![WC Toolkit Angular Wrappers](./assets/wc-toolkit_angular.png)
 
 This package generates Angular wrapper components for your web components from a [Custom Elements Manifest](https://custom-elements-manifest.open-wc.org/) (CEM). It is the Angular counterpart to `@wc-toolkit/react-wrappers`.
 

@@ -21,8 +21,7 @@
   "files": [
     "index.js",
     "index.d.ts",
-    "/dist",
-    "images"
+    "/dist"
   ],
   "scripts": {
     "changeset": "changeset add",
