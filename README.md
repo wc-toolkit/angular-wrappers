@@ -1,6 +1,10 @@
 # WC Toolkit Angular Wrappers
 
+![WC Toolkit Angular Wrappers](./assets/wc-toolkit_angular.png)
+
 This package generates Angular wrapper components for your web components from a [Custom Elements Manifest](https://custom-elements-manifest.open-wc.org/) (CEM). It is the Angular counterpart to `@wc-toolkit/react-wrappers`.
+
+See the [Angular Wrappers documentation](https://wc-toolkit.com/integrations/angular/) for the guide and examples.
 
 Angular has no equivalent of JSX's `IntrinsicElements`, so raw custom element tags in templates can't be given types. Each generated wrapper is a standalone Angular component whose selector is your element's tag name. Its inputs and outputs are typed from the element class, so template bindings are type-checked and documented.
 
@@ -14,7 +18,7 @@ Requires Angular 16.1 or later.
 
 ## Quick Start
 
-This package provides plugins and tools to quicky get wrappers generated.
+This package provides plugins and tools to quickly generate wrappers.
 
 ### 1) CEM Generator Plugin
 
