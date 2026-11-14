@@ -87,7 +87,6 @@
     "*.--write": "prettier --write"
   },
   "publishConfig": {
-    "provenance": true,
     "access": "public"
   },
   "customElements": "demo/custom-elements.json"
