@@ -50,4 +50,8 @@ jobs:
           publish: pnpm release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Optional: set the NPM_TOKEN secret for the initial publish (trusted
+          # publishing requires the package to already exist on npm). Falls
+          # back to OIDC trusted publishing when the secret is not set.
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
