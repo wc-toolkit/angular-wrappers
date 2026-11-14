@@ -1,0 +1,49 @@
+name: Bootstrap npm package
+
+# Temporary, manual-only workflow used once to create the package name on npm
+# before a trusted publisher (OIDC) can be configured for it.
+# Deliberately has NO id-token permission so npm cannot attempt OIDC auth.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Use Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: "pnpm"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify token
+        run: |
+          npm whoami
+          npm access list packages @wc-toolkit
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Build
+        run: pnpm build
+
+      - name: Publish bootstrap version
+        run: |
+          npm version 0.0.0 --no-git-tag-version
+          npm publish --tag bootstrap --access public --provenance=false
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
